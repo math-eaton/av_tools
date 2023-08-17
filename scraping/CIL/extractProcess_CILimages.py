@@ -9,7 +9,6 @@ import numpy as np
 from requests.adapters import HTTPAdapter
 from urllib3.util import Retry
 
-
 # Record the start time
 start_time = time.time()
 
@@ -23,7 +22,7 @@ except FileNotFoundError:
 num_images = 50
 
 # Define the output folder
-output_folder = "scraping/CIL/output"
+output_folder = "video_tools/scraping/CIL/output"
 
 # Base URL for the API
 api_url = "https://cilia.crbs.ucsd.edu/rest"

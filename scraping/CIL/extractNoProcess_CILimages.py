@@ -1,4 +1,5 @@
 import requests
+import config
 from PIL import Image
 from io import BytesIO
 import os
@@ -15,8 +16,8 @@ output_folder = "/Users/matthewheaton/Documents/CIL_API_output"
 api_url = "https://cilia.crbs.ucsd.edu/rest"
 
 # Authentication details
-username = '***REMOVED***'
-password = '***REMOVED***'
+username = config.CIL_API_USER
+password = config.CIL_API_PW
 
 # Define the fields for CCDB images
 ccdb_fields = [
