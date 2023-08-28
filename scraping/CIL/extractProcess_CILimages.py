@@ -19,10 +19,10 @@ except FileNotFoundError:
     processed_ids = set()
 
 # Define the number of images to download
-num_images = 50
+num_images = 4000
 
 # Define the output folder
-output_folder = "video_tools/scraping/CIL/output"
+output_folder = "scraping/CIL/output/raw"
 
 # Base URL for the API
 api_url = "https://cilia.crbs.ucsd.edu/rest"
@@ -117,7 +117,7 @@ def calculate_entropy(image):
 def process_image(image):
     
     # Check the input image resolution
-    min_resolution = 400  # Set minimum resolution. API should provide 512 max thumbnail
+    min_resolution = 300  # Set minimum resolution. API should provide 512 max thumbnail
     width, height = image.size
     if width < min_resolution or height < min_resolution:
         return None
@@ -319,7 +319,7 @@ index = 0
 
 while downloaded_images < num_images and index < len(ids):
     # Call with process=True to process the image or process=False to just download
-    if download_and_maybe_process_image(ids[index], process=False):
+    if download_and_maybe_process_image(ids[index], process=True):
         downloaded_images += 1
         print(f"downloading {ids[index]} ({downloaded_images} of {min(num_images, len(ids))})")
     index += 1

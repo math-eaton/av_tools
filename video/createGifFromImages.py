@@ -18,14 +18,14 @@ def create_gif(image_files, gif_path):
 
 # List of input directories
 image_folders = [
-    '/Users/matthewheaton/Documents/CIL_processed_sort',
+    '/Users/matthewheaton/Documents/DOCENTS/video/hotnose',
     # '/Users/matthewheaton/Documents/GitHub/imagery_scraper/output/processed_imagery/area',
     # '/Users/matthewheaton/Documents/GitHub/imagery_scraper/output/processed_imagery/point',
     # '/Users/matthewheaton/Documents/GitHub/imagery_scraper/output/processed_imagery/polyline',
 ]
 
 # Base path for output GIFs
-output_base_path = '/Users/matthewheaton/Documents/DOCENTS/lp1_design/assets/sorted_test_gif'
+output_base_path = '/Users/matthewheaton/Documents/DOCENTS/video/hotnose/output'
 
 
 # batch process function - by default, this is not used

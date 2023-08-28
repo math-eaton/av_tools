@@ -17,14 +17,16 @@ def create_video(image_files, video_path, frame_rate=13):
             imageio.imwrite(frame_path, image)
 
         # Use FFmpeg to create a video from the individual frames
-        # This example uses the MOV container with H.264 codec, preserving alpha channel
+        # This example uses the WebM format with VP9 codec, preserving alpha channel
         ffmpeg_command = [
             'ffmpeg', 
             '-framerate', str(frame_rate),
             '-i', os.path.join(temp_dir, 'frame_%04d.png'),
             '-y',
-            '-vcodec', 'libx264',
-            '-pix_fmt', 'yuva420p',
+            '-c:v', 'libvpx-vp9',
+            '-pix_fmt', 'yuva420p',  # Use yuva420p pixel format for alpha channel
+            '-b:v', '2M',  # Set video bitrate (adjust as needed)
+            '-crf', '10',  # Set constant rate factor (adjust as needed)
             video_path
         ]
         subprocess.run(ffmpeg_command)
@@ -34,11 +36,11 @@ def create_video(image_files, video_path, frame_rate=13):
 
     print("done.")
 
-image_folder = '/Users/matthewheaton/Documents/CIL_processed_sort' 
+image_folder = '/Users/matthewheaton/Documents/DOCENTS/video/hotnose' 
 image_files = sorted([os.path.join(image_folder, img) for img in os.listdir(image_folder) if img.endswith(".png")])
 
 # Take the first n images for testing results
-image_files = image_files[:500]
+image_files = image_files[:1000]
 
-video_path = "/Users/matthewheaton/Documents/DOCENTS/lp1_design/assets/sorted_test_vid/test_iterative.mp4"
+video_path = "/Users/matthewheaton/Documents/DOCENTS/video/hotnose/output/hotnose.webm"
 create_video(image_files, video_path)
