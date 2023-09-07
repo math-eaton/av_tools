@@ -1,8 +1,15 @@
 import yt_dlp
 import re
+import json
+
+# Load video URLs from free_samples.json
+def load_urls_from_json(filename="audio/output/free_samples.json"):
+    with open(filename, 'r') as file:
+        data = json.load(file)
+    return [song["url"] for song in data]
 
 # List of video URLs you want to download
-URLS = ['https://www.youtube.com/watch?v=4vgcYBwyw28']
+URLS = load_urls_from_json()
 
 # Set the output directory
 output_directory = 'audio/output/DL'
