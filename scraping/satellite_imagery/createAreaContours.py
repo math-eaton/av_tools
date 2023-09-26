@@ -18,14 +18,14 @@ def file_len(fname):
     return i + 1
 
 # Specify the input file path
-input_file_path = 'data/processed/FM_service_contour_current_processed.csv'
+input_file_path = 'scraping/satellite_imagery/data/raw/fm_contours_sample.csv'
 
 # Get the total number of rows in the CSV file
 len_of_file = file_len(input_file_path)
 print(len_of_file)
 
-# Skipping every Nth row
-N = 25  # sample rate
+# Sample every Nth row
+N = 10  # sample rate
 skipped = np.setdiff1d(np.arange(len_of_file), np.arange(0, len_of_file, N))
 print(skipped)
 
@@ -66,6 +66,9 @@ for chunk_idx, df_chunk in tqdm(enumerate(pd.read_csv(input_file_path, skiprows=
 
         # Check if simplified_locations is empty before creating the plot
         if simplified_locations:
+            # Add the first point again to close the circle
+            simplified_locations.append(simplified_locations[0])
+
             # Create a new figure
             plt.figure(figsize=(8, 8), dpi=100)
 
@@ -106,7 +109,7 @@ for chunk_idx, df_chunk in tqdm(enumerate(pd.read_csv(input_file_path, skiprows=
 
             # Save the figure as a PNG image with the name based on the application_id
             application_id = row['application_id']
-            plt.savefig(f'output/processed_imagery/polyline/{application_id}.png', transparent=True)
+            plt.savefig(f'scraping/satellite_imagery/output/polyline/{application_id}.png', transparent=True)
 
             # Close the figure to free up memory
             plt.close()

@@ -36,11 +36,12 @@ def create_video(image_files, video_path, frame_rate=13):
 
     print("done.")
 
-image_folder = '/Users/matthewheaton/Documents/DOCENTS/video/hotnose' 
+image_folder = 'scraping/satellite_imagery/output/polyline' 
+print(image_folder)
 image_files = sorted([os.path.join(image_folder, img) for img in os.listdir(image_folder) if img.endswith(".png")])
 
 # Take the first n images for testing results
 image_files = image_files[:1000]
 
-video_path = "/Users/matthewheaton/Documents/DOCENTS/video/hotnose/output/hotnose.webm"
+video_path = "scraping/satellite_imagery/output/video/contours.webm"
 create_video(image_files, video_path)

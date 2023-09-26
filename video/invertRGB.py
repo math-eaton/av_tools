@@ -33,5 +33,5 @@ def invert_images_in_directory(directory_path):
         inverted_path = os.path.join(inverted_folder, filename)
         inverted_image.save(inverted_path)
 
-image_folder = '/Users/matthewheaton/Documents/GitHub/imagery_scraper/output/polyline_images'
+image_folder = '/Users/matthewheaton/Documents/DOCENTS/video/hotnose'
 invert_images_in_directory(image_folder)
