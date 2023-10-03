@@ -1,4 +1,5 @@
 import os
+import argparse
 
 def create_file_dict(directory, extensions):
     file_dict = {}
@@ -8,10 +9,12 @@ def create_file_dict(directory, extensions):
                 file_dict[file] = os.path.join(root, file)
     return file_dict
 
-def main():
-    input_directory = "output/polyline_images/inverted"
-    compared_directories = ["output/processed_imagery/area/inverted", "output/processed_imagery/point/inverted"]
-    file_extensions = [".txt", ".jpg", ".png"]  # Add more extensions if needed
+def main(input_directory, compared_directories, additional_extensions=[]):
+    file_extensions = [".txt", ".jpg", ".png"]  # Default extensions
+
+    # Append additional extensions from the environmental variable
+    additional_extensions.extend(os.getenv("ADDITIONAL_EXTENSIONS", "").split(","))
+    file_extensions.extend(additional_extensions)
 
     input_files = create_file_dict(input_directory, file_extensions)
 
@@ -38,6 +41,17 @@ def main():
                 print(f"Removed {filename} from input directory.")
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="File Cleanup Script")
+    parser.add_argument("input_directory", help="Input directory")
+    parser.add_argument("compared_directories", nargs='+', help="Compared directories")
+    parser.add_argument("--additional_extensions", default=[], help="Additional file extensions (comma-separated)")
+
+    args = parser.parse_args()
+
+    input_dir = args.input_directory
+    compared_dirs = args.compared_directories
+    additional_extensions = args.additional_extensions.split(",") if args.additional_extensions else []
+
+    main(input_dir, compared_dirs, additional_extensions)
 
 print("done.")
