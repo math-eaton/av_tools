@@ -1,17 +1,16 @@
+import argparse
 import requests
 import json
 from tenacity import retry, wait_fixed
 from config import SPOTIFY_TOKEN, YOUTUBE_API_KEY
 
-PLAYLIST_ID = "35TjfHmu0EwC97hvKiaNy0"
-
 # Function to get songs from Spotify
-def get_spotify_songs():
+def get_spotify_songs(playlist_id):
     headers = {
         "Authorization": f"Bearer {SPOTIFY_TOKEN}"
     }
 
-    response = requests.get(f"https://api.spotify.com/v1/playlists/{PLAYLIST_ID}/tracks", headers=headers)
+    response = requests.get(f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks", headers=headers)
     response.raise_for_status()
 
     data = response.json()
@@ -60,8 +59,12 @@ def append_to_json(filepath, new_data):
     with open(filepath, 'w') as file:
         json.dump(current_data, file, indent=4)
 
-def main():
-    songs_data = get_spotify_songs()
+def main(playlist_id, output_dir):
+    songs_data = get_spotify_songs(playlist_id)
+
+    playlist_info = requests.get(f"https://api.spotify.com/v1/playlists/{playlist_id}", headers={"Authorization": f"Bearer {SPOTIFY_TOKEN}"}).json()
+    playlist_name = playlist_info.get("name", "unknown_playlist")
+    output_json = f"{output_dir}/{playlist_name}.json"
 
     for song_data in songs_data:
         artist = song_data["Artist"]
@@ -73,11 +76,17 @@ def main():
         
         if link:
             song_data["URL"] = link
-            append_to_json("output/free_samples_2.json", song_data)
+            append_to_json(output_json, song_data)
         else:
             print(f"Could not find YouTube link for {query}")
 
-    print("Links saved to output/free_samples.json")
+    print(f"Links saved to {output_json}")
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="Spotify Playlist to YouTube Link Converter")
+    parser.add_argument("playlist_id", help="Spotify Playlist ID")
+    parser.add_argument("output_dir", help="Output directory for the JSON file")
+
+    args = parser.parse_args()
+
+    main(args.playlist_id, args.output_dir)
