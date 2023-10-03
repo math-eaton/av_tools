@@ -18,7 +18,7 @@ def create_gif(image_files, gif_path):
 
 # List of input directories
 image_folders = [
-    '/Users/matthewheaton/Documents/DOCENTS/video/hotnose',
+    '/Users/matthewheaton/Documents/DOCENTS/video/hotnose/inverted',
     # '/Users/matthewheaton/Documents/GitHub/imagery_scraper/output/processed_imagery/area',
     # '/Users/matthewheaton/Documents/GitHub/imagery_scraper/output/processed_imagery/point',
     # '/Users/matthewheaton/Documents/GitHub/imagery_scraper/output/processed_imagery/polyline',
