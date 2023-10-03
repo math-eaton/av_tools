@@ -1,6 +1,7 @@
 from PIL import Image, ImageOps
 from tqdm import tqdm
 import os
+import argparse
 
 def invert_images_in_directory(directory_path):
     # Create the inverted subdirectory
@@ -33,5 +34,15 @@ def invert_images_in_directory(directory_path):
         inverted_path = os.path.join(inverted_folder, filename)
         inverted_image.save(inverted_path)
 
-image_folder = '/Users/matthewheaton/Documents/DOCENTS/video/hotnose'
-invert_images_in_directory(image_folder)
+def main():
+    parser = argparse.ArgumentParser(description="Invert images in a directory")
+    parser.add_argument("input_directory", help="Path to the input directory containing images")
+
+    args = parser.parse_args()
+
+    input_directory = args.input_directory
+
+    invert_images_in_directory(input_directory)
+
+if __name__ == "__main__":
+    main()

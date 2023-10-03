@@ -2,6 +2,7 @@ import os
 import subprocess
 from PIL import Image
 from tqdm import tqdm
+import argparse
 
 def convert_mov_to_gif(input_mov, output_gif, resize=(1240, 720), frame_rate=12):
     # Create a temporary directory for frames
@@ -35,8 +36,23 @@ def convert_mov_to_gif(input_mov, output_gif, resize=(1240, 720), frame_rate=12)
 
     print("Conversion done.")
 
+def main():
+    parser = argparse.ArgumentParser(description="Convert MOV to GIF with optional resizing and frame rate")
+    parser.add_argument("input_mov", help="Path to the input MOV file")
+    parser.add_argument("output_gif", help="Path to the output GIF file")
+    parser.add_argument("--resize", nargs=2, type=int, default=(1240, 720), metavar=("WIDTH", "HEIGHT"),
+                        help="Resize the output GIF (default: 1240 720)")
+    parser.add_argument("--frame-rate", type=int, default=12, metavar="FRAME_RATE",
+                        help="Frame rate of the output GIF (default: 12)")
 
-input_mov = "/Users/matthewheaton/Desktop/screenshot/Screen Recording 2023-08-12 at 4.19.20 PM.mov" 
-output_gif = "/Users/matthewheaton/Documents/GSAPP_2022/GSAPP_summer_2023/slides/fm_newest.gif" 
+    args = parser.parse_args()
 
-convert_mov_to_gif(input_mov, output_gif)
+    input_mov = args.input_mov
+    output_gif = args.output_gif
+    resize = tuple(args.resize)
+    frame_rate = args.frame_rate
+
+    convert_mov_to_gif(input_mov, output_gif, resize=resize, frame_rate=frame_rate)
+
+if __name__ == "__main__":
+    main()

@@ -3,6 +3,7 @@ import cv2
 import pickle
 import shutil
 from tqdm import tqdm
+import argparse
 
 def copy_and_rename(image_path, idx, output_folder):
     """Copy the image to the output folder and rename it based on the index."""
@@ -15,7 +16,7 @@ def extract_features(image_path):
     _, des = orb.detectAndCompute(img, None)
     return des
 
-def compute_similarity(des1, des2, seed_index, current_index, index_penalty=0.5, distance_threshold=30):  # threshold gives good vis sort results, default 30
+def compute_similarity(des1, des2, seed_index, current_index, index_penalty=0.5, distance_threshold=30):
     if des1 is None or des2 is None or len(des1) == 0 or len(des2) == 0:
         return float('inf')
 
@@ -38,8 +39,6 @@ def compute_similarity(des1, des2, seed_index, current_index, index_penalty=0.5,
 
     return similarity
 
-###############
-
 def cache_features(image_folder, cache_path, num_images=None):
     if os.path.exists(cache_path):
         with open(cache_path, 'rb') as f:
@@ -47,16 +46,12 @@ def cache_features(image_folder, cache_path, num_images=None):
     else:
         features_cache = {}
 
-    # Sort the input directory alphabetically
     images = sorted([os.path.join(image_folder, img) for img in os.listdir(image_folder) if img.endswith('.png')])
 
-    # If num_images is specified, truncate the list of images
     if num_images:
         images = images[:num_images]
         print(f"Processing {len(images)} images.")
 
-    
-    # Compute and save missing features
     for image_path in tqdm(images, desc="Caching features"):
         if image_path not in features_cache:
             features_cache[image_path] = extract_features(image_path)
@@ -71,10 +66,8 @@ def iterative_sorting(image_folder, cache_path, num_iterations=3, window_size=10
     images = list(features_cache.keys())
     seed_image_path = images[0]  # Initial seed
     
-    # Initial Sort
     sorted_images = sort_using_cache(seed_image_path, features_cache)
 
-    # Refined Iterative Sorts
     for iteration in range(num_iterations):
         print(f"Refining sort: Iteration {iteration + 1}")
         for i in tqdm(range(0, len(sorted_images) - window_size), desc="Windowed refinement"):
@@ -93,7 +86,6 @@ def sort_using_cache(seed_image_path, features_cache, specific_images=None):
     else:
         images = list(features_cache.keys())
 
-    # Compute similarity scores
     scores = []
     for index, image_path in enumerate(images):
         img_features = features_cache[image_path]
@@ -101,34 +93,37 @@ def sort_using_cache(seed_image_path, features_cache, specific_images=None):
         similarity = compute_similarity(seed_features, img_features, seed_index, index)
         scores.append((image_path, similarity))
 
-        # Print the match score
-        # print(f"Image: {image_path}, Score: {similarity}")
-
     sorted_images = sorted(scores, key=lambda x: x[1], reverse=True)
     return [img[0] for img in sorted_images]
 
-def main(image_folder, output_folder, num_iterations=3, window_size=10):
+def main(image_folder, output_folder, num_iterations=3, window_size=10, num_images=None):
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
-    # Path to save/load cached features
     cache_path = os.path.join(image_folder, "features_cache.pkl")
-
-    # Use iterative sorting
+    
     sorted_image_paths = iterative_sorting(image_folder, cache_path, num_iterations, window_size)
 
-    # Copy and rename the images
     print("Copying and renaming the images based on similarity...")
     for idx, image_path in tqdm(enumerate(sorted_image_paths)):
         copy_and_rename(image_path, idx, output_folder)
     
     print("done.")
 
-
 if __name__ == "__main__":
-    folder_path = "scraping/CIL/output/raw"  
-    output_path = "scraping/CIL/output/sorted"  
+    parser = argparse.ArgumentParser(description="Sort images based on similarity")
+    parser.add_argument("image_folder", help="Path to the input folder containing images")
+    parser.add_argument("output_folder", help="Path to the output folder for sorted images")
+    parser.add_argument("--num-iterations", type=int, default=3, help="Number of iterations for refining sort")
+    parser.add_argument("--window-size", type=int, default=10, help="Window size for refining sort")
+    parser.add_argument("--num-images", type=int, help="Number of images to process (optional)")
 
-    #  adjust num_iterations, window_size, and num_images as needed
-    # num_images = 50
-    main(folder_path, output_path, num_iterations=5, window_size=50)
+    args = parser.parse_args()
+
+    image_folder = args.image_folder
+    output_folder = args.output_folder
+    num_iterations = args.num_iterations
+    window_size = args.window_size
+    num_images = args.num_images
+
+    main(image_folder, output_folder, num_iterations, window_size, num_images)

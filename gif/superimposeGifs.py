@@ -1,5 +1,6 @@
 from PIL import Image
 from tqdm import tqdm
+import argparse
 
 def superimpose_gifs(gif_path1, gif_path2, output_path):
     # Open the GIFs
@@ -32,7 +33,19 @@ def superimpose_gifs(gif_path1, gif_path2, output_path):
 
     print("done.")
 
-gif_path1 = '/Users/matthewheaton/Documents/GitHub/imagery_scraper/output/animations/area.gif'
-gif_path2 = '/Users/matthewheaton/Documents/GitHub/imagery_scraper/output/animations/polyline.gif'
-output_path = '/Users/matthewheaton/Documents/GitHub/cdp_colloquium_i/site_refactor/assets/gif/combined.gif'
-superimpose_gifs(gif_path1, gif_path2, output_path)
+def main():
+    parser = argparse.ArgumentParser(description="Superimpose two GIFs into one")
+    parser.add_argument("gif_path1", help="Path to the first input GIF")
+    parser.add_argument("gif_path2", help="Path to the second input GIF")
+    parser.add_argument("output_path", help="Path to the output combined GIF")
+
+    args = parser.parse_args()
+
+    gif_path1 = args.gif_path1
+    gif_path2 = args.gif_path2
+    output_path = args.output_path
+
+    superimpose_gifs(gif_path1, gif_path2, output_path)
+
+if __name__ == "__main__":
+    main()

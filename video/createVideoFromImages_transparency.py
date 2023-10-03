@@ -4,6 +4,7 @@ from tqdm import tqdm
 import subprocess
 import shutil
 import tempfile
+import argparse
 
 def create_video(image_files, video_path, frame_rate=13):
     # Create a temporary directory to store individual frames
@@ -36,12 +37,20 @@ def create_video(image_files, video_path, frame_rate=13):
 
     print("done.")
 
-image_folder = 'scraping/satellite_imagery/output/polyline' 
-print(image_folder)
-image_files = sorted([os.path.join(image_folder, img) for img in os.listdir(image_folder) if img.endswith(".png")])
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Image to Video Conversion Script")
+    parser.add_argument("--input_dir", required=True, help="Input directory containing image files")
+    parser.add_argument("--output_dir", required=True, help="Output directory for the video file")
+    parser.add_argument("--output_video_name", required=True, help="Name of the output video file")
+    parser.add_argument("--framerate", type=int, default=13, help="Framerate for the output video (default: 13)")
+    args = parser.parse_args()
 
-# Take the first n images for testing results
-image_files = image_files[:1000]
+    # Input image folder
+    image_folder = args.input_dir
+    image_files = sorted([os.path.join(image_folder, img) for img in os.listdir(image_folder) if img.endswith(".png")])
 
-video_path = "scraping/satellite_imagery/output/video/contours.webm"
-create_video(image_files, video_path)
+    # Output video path
+    output_video_path = os.path.join(args.output_dir, args.output_video_name)
+
+    # Create the video
+    create_video(image_files, output_video_path, args.framerate)

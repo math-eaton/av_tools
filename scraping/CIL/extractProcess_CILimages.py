@@ -8,6 +8,7 @@ import time
 import numpy as np
 from requests.adapters import HTTPAdapter
 from urllib3.util import Retry
+import argparse
 
 # Record the start time
 start_time = time.time()
@@ -114,7 +115,7 @@ def calculate_entropy(image):
 
 
 # Process the image using Floyd-Steinberg error diffusion
-def process_image(image):
+def process_image(image, output_size=(1200, 1200)):
     
     # Check the input image resolution
     min_resolution = 300  # Set minimum resolution. API should provide 512 max thumbnail
@@ -170,9 +171,7 @@ def process_image(image):
     image = image.crop((left, top, right, bottom))
 
     # Resize the image (post-dither) using nearest neighbor
-    size = (1200, 1200)  # Set your desired size here
-    # size = (1200, 900)  # Size for video
-    image = image.resize(size, Image.NEAREST)
+    image = image.resize(output_size, Image.NEAREST)
     print("rescaling...")
 
     return image
@@ -292,43 +291,31 @@ def download_and_maybe_process_image(image_id, process=True):
 
     return False
 
-# alternatively, use a seed for pseudo-random ID shuffle
-# random.seed(666)
-# random.shuffle(ids)
+def main():
+    parser = argparse.ArgumentParser(description="Download and process images from the CIL/CDBB API.")
+    parser.add_argument("--skip-processing", action="store_true", help="Skip the image processing step.")
+    parser.add_argument("--output-size", type=int, nargs=2, metavar=("width", "height"), help="Output image size (width and height).")
+    args = parser.parse_args()
 
-# Fetch the list of public IDs
-response = requests.get(f"{api_url}/public_ids?from=0&size=50000", auth=(username, password))
-response.raise_for_status()
+    output_size = (1200, 1200)  # Default output size
+    if args.output_size:
+        output_size = tuple(args.output_size)
 
-# Get the list of IDs
-ids = [hit['_id'] for hit in response.json()['hits']['hits']]
+    while downloaded_images < num_images and index < len(ids):
+        # Call with process=True to process the image or process=False to just download
+        if download_and_maybe_process_image(ids[index], process=not args.skip_processing):
+            downloaded_images += 1
+            print(f"downloading {ids[index]} ({downloaded_images} of {min(num_images, len(ids))})")
+        index += 1
 
-# Filter the IDs to only include those up to 50000 to avoid placeholder images
-ids = [id for id in ids if int(id[4:]) <= 50000]  # Assumes all IDs start with 'CIL_' which they seem to
+    print("done.")
+    # Record the end time
+    end_time = time.time()
 
-# Randomly shuffle the list of IDs
-# with new seed for random based on current time
-random.seed(time.time())
-random.shuffle(ids)
+    # Calculate and print the total execution time
+    total_time_sec= end_time - start_time
+    total_time_min=total_time_sec/60
+    print(f"total runtime: {round(total_time_min, 2)} minutes")
 
-# Initialize counter for downloaded images
-downloaded_images = 0
-
-# Initialize an index for the IDs list
-index = 0
-
-while downloaded_images < num_images and index < len(ids):
-    # Call with process=True to process the image or process=False to just download
-    if download_and_maybe_process_image(ids[index], process=True):
-        downloaded_images += 1
-        print(f"downloading {ids[index]} ({downloaded_images} of {min(num_images, len(ids))})")
-    index += 1
-
-print("done.")
-# Record the end time
-end_time = time.time()
-
-# Calculate and print the total execution time
-total_time_sec= end_time - start_time
-total_time_min=total_time_sec/60
-print(f"total runtime: {round(total_time_min, 2)} minutes")
+if __name__ == "__main__":
+    main()

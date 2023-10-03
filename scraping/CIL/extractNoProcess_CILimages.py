@@ -5,12 +5,7 @@ from io import BytesIO
 import os
 import random
 import time
-
-# Define the number of images to download
-num_images = 5
-
-# Define the output folder
-output_folder = "/Users/matthewheaton/Documents/CIL_API_output"
+import argparse
 
 # Base URL for the API
 api_url = "https://cilia.crbs.ucsd.edu/rest"
@@ -27,7 +22,7 @@ ccdb_fields = [
 ]
 
 # Function to get a random image from the API
-def download_image(image_id):
+def download_image(image_id, output_folder):
     try:
         # Fetch the document data from the API
         response = requests.get(f"{api_url}/public_documents/{image_id}", auth=(username, password), timeout=5)
@@ -79,22 +74,37 @@ def download_image(image_id):
     except Exception as e:
         print(f"An error occurred for image ID: {image_id}. Error details: {str(e)}")
 
-# Fetch the list of public IDs
-response = requests.get(f"{api_url}/public_ids?from=0&size=50000", auth=(username, password))
-response.raise_for_status()
+def main(num_images, output_folder):
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
 
-# Get the list of IDs
-ids = [hit['_id'] for hit in response.json()['hits']['hits']]
+    # Fetch the list of public IDs
+    response = requests.get(f"{api_url}/public_ids?from=0&size=50000", auth=(username, password))
+    response.raise_for_status()
 
+    # Get the list of IDs
+    ids = [hit['_id'] for hit in response.json()['hits']['hits']]
 
-# Randomly shuffle the list of IDs
-# with new seed for random based on current time
-random.seed(time.time())
-random.shuffle(ids)
+    # Randomly shuffle the list of IDs
+    # with new seed for random based on current time
+    random.seed(time.time())
+    random.shuffle(ids)
 
-# Download the images
-for i in range(min(num_images, len(ids))):
-    download_image(ids[i])
-    print(f"Downloading... ({i+1} of {min(num_images, len(ids))})")
+    # Download the images
+    for i in range(min(num_images, len(ids))):
+        download_image(ids[i], output_folder)
+        print(f"Downloading... ({i+1} of {min(num_images, len(ids))})")
 
-print("Done.")
+    print("Done.")
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Download images from the CIL API")
+    parser.add_argument("num_images", type=int, help="Number of images to download")
+    parser.add_argument("output_folder", help="Path to the output folder for downloaded images")
+
+    args = parser.parse_args()
+
+    num_images = args.num_images
+    output_folder = args.output_folder
+
+    main(num_images, output_folder)
