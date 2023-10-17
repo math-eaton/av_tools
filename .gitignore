@@ -2,6 +2,8 @@
 config.py
 data/
 output/
+*.yml
+gitignore
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
