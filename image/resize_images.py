@@ -20,10 +20,10 @@ def resize_image(filename, output_folder, image_size):
         image.save(output_path, "PNG")
         print("Saving...")
 
-        # If the new file is saved successfully, remove the original file
-        if os.path.isfile(output_path):
-            os.remove(filename)
-            print(f"Removed original file: {filename}")
+        # NB: If the new file is saved successfully, remove the original file
+        # if os.path.isfile(output_path):
+        #     os.remove(filename)
+        #     print(f"Removed original file: {filename}")
 
     except Exception as e:
         print(f"An error occurred for file: {filename}. Error details: {str(e)}")

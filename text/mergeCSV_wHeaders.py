@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-from typing import Optional
+from tqdm import tqdm
 
 def merge_spreadsheets(directory: str, output_filename: str, chunk_size: int = 10000):
     # Define the column schema with data types for optimization
@@ -15,19 +15,46 @@ def merge_spreadsheets(directory: str, output_filename: str, chunk_size: int = 1
     # Get all the spreadsheet filenames in the directory
     spreadsheet_files = [f for f in os.listdir(directory) if f.endswith('.csv')]
     
-    # Prepare the CSV writer to write chunks to the output file
-    first_chunk = True
+    # Calculate the total size of the files to estimate progress
+    total_size = sum(os.path.getsize(os.path.join(directory, f)) for f in spreadsheet_files)
+    processed_size = 0
+
+    # Initialize the progress bar
+    pbar = tqdm(total=total_size, unit='B', unit_scale=True, desc='Merging Spreadsheets')
+
+    # Initialize a variable to track whether the header has been written
+    header_written = False
+
+    # Iterate through each file and process each file in chunks
     for filename in spreadsheet_files:
         filepath = os.path.join(directory, filename)
-        # Process each file in chunks
-        for chunk in pd.read_csv(filepath, chunksize=chunk_size, dtype=dtypes):
-            # If first chunk, write header, else skip header
-            header = first_chunk
-            chunk.to_csv(output_filename, mode='a', index=False, header=header)
-            first_chunk = False
+        # Read each file in chunks
+        chunk_iterator = pd.read_csv(filepath, chunksize=chunk_size, dtype=dtypes, iterator=True)
+        
+        # Process the first chunk separately to write the header
+        try:
+            first_chunk = next(chunk_iterator)
+            first_chunk.to_csv(output_fil
+            ename, mode='w', index=False, header=True)
+            header_written = True
+            # Update the processed size and progress bar
+            processed_size += os.path.getsize(filepath)
+            pbar.update(min(chunk_size, processed_size))
+        except StopIteration:
+            # This is reached if the file is empty
+            continue
+        
+        # Process the remaining chunks
+        for chunk in chunk_iterator:
+            chunk.to_csv(output_filename, mode='a', index=False, header=False)
+            # Update the processed size and progress bar
+            processed_size += os.path.getsize(filepath)
+            pbar.update(min(chunk_size, processed_size))
 
+    # Close the progress bar
+    pbar.close()
     return output_filename
 
 # Example usage:
-merged_filename = merge_spreadsheets('/Users/matthewheaton/Documents/GitHub/cdp_colloquium/colloquium_ii/data/cellID_csv', '/Users/matthewheaton/Documents/GitHub/cdp_colloquium/colloquium_ii/data/USAcellularTowers_merged.csv')
+merged_filename = merge_spreadsheets('/Users/matthewheaton/Documents/GitHub/cdp_colloquium/colloquium_ii/data/cellID_csv', '/Users/matthewheaton/Documents/GitHub/cdp_colloquium/colloquium_ii/data/cellID_csv/USAcellularTowers_merged.csv')
 print(f"Merged spreadsheet saved as {merged_filename}")

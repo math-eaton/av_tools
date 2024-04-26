@@ -1,10 +1,36 @@
 import os
 import subprocess
-from PIL import Image
+from PIL import Image, UnidentifiedImageError, ImageStat
+import numpy as np
 from tqdm import tqdm
 import argparse
 
-def convert_video_to_gif(input_video, output_gif, resize=(1240, 720), frame_rate=12):
+def is_frame_corrupt(frame_path):
+    try:
+        with Image.open(frame_path) as img:
+            img.verify()  # Verify the image integrity
+        return False
+    except (IOError, UnidentifiedImageError):
+        return True
+
+def count_dark_pixels(image, threshold=50):
+    grayscale = image.convert('L')
+    np_image = np.array(grayscale)
+    return np.sum(np_image < threshold)
+
+def remove_outlier_frames(frame_paths, resize, z_threshold=2):
+    frames = [Image.open(f).convert('RGBA').resize(resize, Image.NEAREST) for f in frame_paths]
+    dark_counts = [count_dark_pixels(frame) for frame in frames]
+
+    median_dark = np.median(dark_counts)
+    std_dark = np.std(dark_counts)
+
+    valid_frames = [frame for frame, count in zip(frames, dark_counts) if abs(count - median_dark) <= z_threshold * std_dark]
+    return valid_frames
+
+
+
+def convert_video_to_gif(input_video, output_gif, resize=(1024, 768), frame_rate=12):
     # Create a temporary directory for frames
     temp_dir = "temp_frames"
     os.makedirs(temp_dir, exist_ok=True)
@@ -35,12 +61,15 @@ def convert_video_to_gif(input_video, output_gif, resize=(1240, 720), frame_rate
         os.path.join(temp_dir, 'frame%04d.png')
     ])
 
-    # Read all the frames
-    frame_files = sorted([os.path.join(temp_dir, f) for f in os.listdir(temp_dir)])
-    frames = [Image.open(f).convert('RGBA').resize(resize, Image.NEAREST) for f in tqdm(frame_files, desc="Reading frames")]
+    # Read all the frames and filter out corrupt ones
+    frame_files = sorted(os.path.join(temp_dir, f) for f in os.listdir(temp_dir))
+    non_corrupt_frames = [f for f in frame_files if not is_frame_corrupt(f)]
+
+    # Remove outlier frames based on dark pixel count
+    frames = remove_outlier_frames(non_corrupt_frames, resize)
 
     if not frames:
-        print("No frames were read from the input video.")
+        print("No valid frames were found after filtering.")
         return
 
     # ping pong playback - comment out if not desired

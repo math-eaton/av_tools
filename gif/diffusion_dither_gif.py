@@ -23,16 +23,81 @@ def process_frame(frame, new_size):
 
     return frame
 
+def is_frame_empty(frame, threshold=0.05, variance_threshold=4):
+    # Convert the frame to grayscale
+    grayscale = frame.convert('L')
+    np_image = np.array(grayscale)
+
+    # Calculate the variance
+    variance = np.var(np_image)
+    return variance < variance_threshold
+
 def process_gif(filename, output_folder, dpi=300, specified_size=None):
     with Image.open(filename) as image:
         print("Loading " + filename + "...")
 
         new_size = specified_size if specified_size else calculate_new_size(image, dpi)
-
         frames = []
         for frame in ImageSequence.Iterator(image):
             processed_frame = process_frame(frame.copy(), new_size)
-            frames.append(processed_frame)
+            if not is_frame_empty(processed_frame):
+                frames.append(processed_frame)
+
+        if len(frames) > 1:
+            # Remove the first frame after processing
+            frames.pop(0)
+        else:
+            print("Not enough frames to remove the first one in " + filename)
+            return
+
+        if not frames:
+            print("No valid frames found in " + filename)
+            return
+
+        output_filename = os.path.splitext(os.path.basename(filename))[0] + "_dithered.gif"
+        output_filename = os.path.join(output_folder, output_filename)
+
+        frames[0].save(output_filename, save_all=True, append_images=frames[1:], loop=0, duration=image.info['duration'], disposal=2)
+        print("Saving " + output_filename)
+    with Image.open(filename) as image:
+        print("Loading " + filename + "...")
+
+        new_size = specified_size if specified_size else calculate_new_size(image, dpi)
+        frames = []
+        for i, frame in enumerate(ImageSequence.Iterator(image)):
+            # Skip the first frame
+            if i == 0:
+                continue
+
+            processed_frame = process_frame(frame.copy(), new_size)
+
+            # Apply the empty frame check
+            if not is_frame_empty(processed_frame):
+                frames.append(processed_frame)
+
+        if not frames:
+            print("No valid frames found in " + filename)
+            return
+
+        output_filename = os.path.splitext(os.path.basename(filename))[0] + "_dithered.gif"
+        output_filename = os.path.join(output_folder, output_filename)
+
+        # Save the GIF, starting from what was originally the second frame
+        frames[0].save(output_filename, save_all=True, append_images=frames[1:], loop=0, duration=image.info['duration'], disposal=2)
+        print("Saving " + output_filename)
+    with Image.open(filename) as image:
+        print("Loading " + filename + "...")
+
+        new_size = specified_size if specified_size else calculate_new_size(image, dpi)
+        frames = []
+        for frame in ImageSequence.Iterator(image):
+            processed_frame = process_frame(frame.copy(), new_size)
+            if not is_frame_empty(processed_frame):
+                frames.append(processed_frame)
+
+        if not frames:
+            print("No valid frames found in " + filename)
+            return
 
         output_filename = os.path.splitext(os.path.basename(filename))[0] + "_dithered.gif"
         output_filename = os.path.join(output_folder, output_filename)

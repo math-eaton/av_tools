@@ -11,7 +11,56 @@ def calculate_new_size(image, dpi):
     new_width = int(aspect_ratio * new_height)
     return (new_width, new_height)
 
-def process_image(filename, output_folder, dpi=300, specified_size=None):
+def process_image(filename, output_folder, dpi=300, specified_size=None, invert=False):
+    # Load the image
+    image = Image.open(filename)
+    print("Loading " + filename + "...")
+
+    # Determine the new size
+    if specified_size:
+        new_size = specified_size
+    else:
+        new_size = calculate_new_size(image, dpi)
+
+    # Resize the image while preserving aspect ratio
+    image.thumbnail(new_size, Image.BILINEAR)
+    print(f"Resizing to {new_size} with aspect ratio preserved...")
+
+    # Convert the image to grayscale
+    image = image.convert('L')
+
+    # Dither the image
+    image = image.convert('1')
+    print("Dithering...")
+
+    # Convert the image back to RGB
+    image = image.convert('RGB')
+
+    # Make sure the image has an alpha channel
+    image = image.convert('RGBA')
+
+    # Convert white (also shades of whites) pixels to transparent, or invert logic based on argument
+    data = np.array(image)
+    red, green, blue, alpha = data[:,:,0], data[:,:,1], data[:,:,2], data[:,:,3]
+
+    if invert:
+        # Make non-white areas transparent
+        non_white_areas = (red <= 200) | (green <= 200) | (blue <= 200)
+        data[non_white_areas] = [0, 0, 0, 0]
+    else:
+        # Make white areas transparent
+        white_areas = (red > 200) & (green > 200) & (blue > 200)
+        data[white_areas] = [255, 255, 255, 0]
+
+    image = Image.fromarray(data)
+    # Resize the image (post-dither) using nearest neighbor
+    image = image.resize(new_size, Image.NEAREST)
+
+    # Save the image
+    output_filename = os.path.splitext(os.path.basename(filename))[0] + ".png"
+    output_filename = os.path.join(output_folder, output_filename)
+    image.save(output_filename)
+    print("Saving " + output_filename)
     # Load the image
     image = Image.open(filename)
     print("Loading " + filename + "...")
@@ -39,11 +88,19 @@ def process_image(filename, output_folder, dpi=300, specified_size=None):
     # Make sure the image has an alpha channel
     image = image.convert('RGBA')
 
-    # Convert white (also shades of whites) pixels to transparent
+    # Convert white (also shades of whites) pixels to transparent, or invert logic based on argument
     data = np.array(image)
     red, green, blue, alpha = data[:,:,0], data[:,:,1], data[:,:,2], data[:,:,3]
-    white_areas = (red > 200) & (green > 200) & (blue > 200)
-    data[white_areas] = [255, 255, 255, 0]
+
+    if invert:
+        # Make non-white areas transparent
+        non_white_areas = (red <= 200) | (green <= 200) | (blue <= 200)
+        data[non_white_areas] = [0, 0, 0, 0]
+    else:
+        # Make white areas transparent
+        white_areas = (red > 200) & (green > 200) & (blue > 200)
+        data[white_areas] = [255, 255, 255, 0]
+
     image = Image.fromarray(data)
 
     # Resize the image (post-dither) using nearest neighbor
@@ -64,6 +121,10 @@ def main():
     parser.add_argument("--dpi", type=int, default=300, help="DPI for resizing images (default: 300)")
     parser.add_argument("--size", type=int, nargs=2, metavar=("WIDTH", "HEIGHT"),
                         help="Specific size for resizing images (overrides DPI setting)")
+    parser.add_argument("--invert", type=lambda x: (str(x).lower() == 'true'), default=False,
+                    help="Invert which pixels become transparent (default: False)")
+
+
 
     args = parser.parse_args()
 
@@ -78,12 +139,12 @@ def main():
 
     # Loop over all files
     for filename in files:
-        if filename.endswith(('.png', '.jpg', '.jpeg', '.bmp', '.gif', '.tiff')):
+        if filename.endswith(('.png', '.jpg', '.jpeg', '.bmp', '.gif', '.tiff', '.tif', '.webp')):
             # Check if specific size is provided, otherwise set to None
             specified_size = tuple(args.size) if args.size else None
 
             # Process the image
-            process_image(os.path.join(input_folder, filename), output_folder, dpi=args.dpi, specified_size=specified_size)
+            process_image(os.path.join(input_folder, filename), output_folder, dpi=args.dpi, specified_size=specified_size, invert=args.invert)
             print("Processed " + filename)
 
 if __name__ == "__main__":
