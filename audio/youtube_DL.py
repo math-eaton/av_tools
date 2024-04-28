@@ -9,25 +9,24 @@ import random
 def remove_whitespace(s):
     return re.sub(r'\s', '', s)
 
-def download_audio(input_source, output_dir, preferred_codec='mp3', delay=5):
+def download_audio(input_source, output_dir, preferred_codec='mp3', delay=1, is_playlist=False):
     ydl_opts = {
         'format': f'{preferred_codec}/bestaudio/best',
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
             'preferredcodec': preferred_codec,
-            'preferredquality': '192',
+            'preferredquality': '96',  # low quality for space optimization - change to 320 for high quality
         }],
         'outtmpl': f'{output_dir}/{remove_whitespace("%(title)s.%(ext)s")}',
-        'noplaylist': True,
+        'noplaylist': not is_playlist,  # True if downloading a single video, False if it's a playlist
         'ratelimit': 50 * 1024 * 1024,  # Limit the download rate to 50 MB/s
         'sleep_interval': delay,  # Time to wait before downloading the next video
         'max_sleep_interval': delay + 5,  # Maximum time to wait if yt-dlp decides to sleep longer
     }
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        if input_source.startswith('http'):
-            urls = [input_source]
-        else:
+        urls = [input_source] if input_source.startswith('http') else []
+        if not urls:
             with open(input_source, 'r') as file:
                 data = json.load(file)
             urls = [song["URL"] for song in data]
@@ -53,22 +52,20 @@ def download_audio(input_source, output_dir, preferred_codec='mp3', delay=5):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="YouTube Audio Downloader")
     parser.add_argument("--input-json", help="Input JSON file containing YouTube URLs")
-    parser.add_argument("--yt_url", help="Single YouTube URL to download")
+    parser.add_argument("--yt-url", help="Single YouTube URL to download")
+    parser.add_argument("--playlist", help="YouTube Playlist URL to download")
     parser.add_argument("output_dir", help="Output directory for downloaded audio files")
     parser.add_argument("--preferred-codec", default="mp3", help="Preferred audio codec (default: mp3)")
-    parser.add_argument("--delay", type=int, default=10, help="Delay between downloads in seconds")
+    parser.add_argument("--delay", type=int, default=5, help="Delay between downloads in seconds")
 
     args = parser.parse_args()
 
-    if args.input_json and args.yt_url:
-        print("Error: You can only specify one of input JSON or YouTube URL, not both.")
-    elif not args.input_json and not args.yt_url:
-        print("Error: You must specify either input JSON or a YouTube URL.")
+    if sum([bool(args.input_json), bool(args.yt_url), bool(args.playlist)]) != 1:
+        print("Error: You must specify exactly one of input JSON, YouTube URL, or playlist.")
     else:
         if args.input_json:
             download_audio(args.input_json, args.output_dir, args.preferred_codec, args.delay)
-        else:
+        elif args.yt_url:
             download_audio(args.yt_url, args.output_dir, args.preferred_codec, args.delay)
-
-# example 
-#  /Users/matthewheaton/micromamba/envs/creativeCoding/bin/python /Users/matthewheaton/Documents/GitHub/av_tools/audio/youtube_DL.py --yt_url "https://www.youtube.com/watch?v=NAgXG00Vhdk" "/Users/matthewheaton/Documents/GitHub/remotesensing/src/assets/sounds"
+        elif args.playlist:
+            download_audio(args.playlist, args.output_dir, args.preferred_codec, args.delay, is_playlist=True)

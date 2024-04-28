@@ -26,8 +26,8 @@ def extract_audio_snippet(input_dir, output_dir):
             file_path = os.path.join(input_dir, file_name)
             audio = AudioSegment.from_file(file_path)
 
-            start_time = int(len(audio) * 0.33)
-            end_time = start_time + 30 * 1000  # N seconds in milliseconds
+            start_time = int(len(audio) * 0.25)
+            end_time = start_time + 90 * 1000  # N seconds in milliseconds
 
             # Clip the audio to not exceed the file's length
             snippet = audio[start_time:end_time]
@@ -41,7 +41,7 @@ def extract_audio_snippet(input_dir, output_dir):
 
             sanitized_file_name = sanitize_filename(f"snippet_{file_name}")
             output_file_path = os.path.join(output_dir, sanitized_file_name)
-            snippet.export(output_file_path, format='mp3', bitrate='64k')
+            snippet.export(output_file_path, format='mp3', bitrate='32k')
 
             print(f"Processed {file_name} and saved to {output_file_path}")
 
