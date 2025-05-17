@@ -1,0 +1,99 @@
+CD_DA
+
+// global CD-TEXT data
+
+CD_TEXT {
+
+  // Mapping from language number (0..7) used in 'LANGUAGE' statements 
+  // to language code.
+  LANGUAGE_MAP {
+    0 : EN  // 9 is the code for ENGLISH,
+            // I don't know any other language code, yet
+  }
+
+  // Language number should always start with 0
+  LANGUAGE 0 {
+    // Required fields - at least all CD-TEXT CDs I've seen so far have them.
+    TITLE "Shadowboxing"
+    PERFORMER "Docents"
+    DISC_ID "TT13"
+    UPC_EAN "" // usually empty
+
+    // Further possible items, all of them are optional
+    ARRANGER ""
+    SONGWRITER ""
+    MESSAGE "" 
+    GENRE "" // I'm not sure if this should be really ascii data
+  }
+}
+
+
+TRACK AUDIO
+CD_TEXT {
+  LANGUAGE 0 {
+    TITLE "Garden"
+
+    PERFORMER "Docents"
+    ISRC "QZNWZ2598247"
+
+    ARRANGER ""
+    SONGWRITER ""
+    MESSAGE "" 
+  }
+}
+
+TRACK AUDIO
+CD_TEXT {
+  LANGUAGE 0 {
+    TITLE "Shadowboxing"
+
+    PERFORMER "Docents"
+    ISRC "QZNWZ2598248"
+
+    ARRANGER ""
+    SONGWRITER ""
+    MESSAGE "" 
+  }
+}
+
+TRACK AUDIO
+CD_TEXT {
+  LANGUAGE 0 {
+    TITLE "Double Fantasy"
+
+    PERFORMER "Docents"
+    ISRC "QZNWZ2598249"
+
+    ARRANGER ""
+    SONGWRITER ""
+    MESSAGE "" 
+  }
+}
+
+TRACK AUDIO
+CD_TEXT {
+  LANGUAGE 0 {
+    TITLE "Shouldn't We"
+
+    PERFORMER "Docents"
+    ISRC "QZNWZ2598250"
+
+    ARRANGER ""
+    SONGWRITER ""
+    MESSAGE "" 
+  }
+}
+
+TRACK AUDIO
+CD_TEXT {
+  LANGUAGE 0 {
+    TITLE "Workout"
+
+    PERFORMER "Docents"
+    ISRC "QZNWZ2598251"
+
+    ARRANGER ""
+    SONGWRITER ""
+    MESSAGE "" 
+  }
+}
