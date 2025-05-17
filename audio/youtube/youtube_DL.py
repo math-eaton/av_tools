@@ -15,7 +15,7 @@ def download_audio(input_source, output_dir, preferred_codec='mp3', delay=1, is_
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
             'preferredcodec': preferred_codec,
-            'preferredquality': '96',  # low quality for space optimization - change to 320 for high quality
+            'preferredquality': '320',  # low quality '96' for space optimization - change to 320 for high quality
         }],
         'outtmpl': f'{output_dir}/{remove_whitespace("%(title)s.%(ext)s")}',
         'noplaylist': not is_playlist,  # True if downloading a single video, False if it's a playlist
@@ -52,7 +52,7 @@ def download_audio(input_source, output_dir, preferred_codec='mp3', delay=1, is_
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="YouTube Audio Downloader")
     parser.add_argument("--input-json", help="Input JSON file containing YouTube URLs")
-    parser.add_argument("--yt-url", help="Single YouTube URL to download")
+    parser.add_argument("--yt-url", help="Single YouTube URL to download (in quotes)")
     parser.add_argument("--playlist", help="YouTube Playlist URL to download")
     parser.add_argument("output_dir", help="Output directory for downloaded audio files")
     parser.add_argument("--preferred-codec", default="mp3", help="Preferred audio codec (default: mp3)")
@@ -69,3 +69,4 @@ if __name__ == "__main__":
             download_audio(args.yt_url, args.output_dir, args.preferred_codec, args.delay)
         elif args.playlist:
             download_audio(args.playlist, args.output_dir, args.preferred_codec, args.delay, is_playlist=True)
+

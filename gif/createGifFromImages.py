@@ -29,7 +29,7 @@ def create_gif(image_files, gif_path):
         save_all=True,
         append_images=images[1:],
         optimize=True,
-        duration=90,
+        duration=1000/12,
         loop=0,
         disposal=2
     )
@@ -59,7 +59,7 @@ def create_gif_batch(image_files, gif_path, batch_size=500, lossy=None):
                 save_all=True,
                 append_images=images[1:],
                 optimize=True,
-                duration=90,
+                duration=1000/12,
                 loop=0,
                 disposal=2
             )

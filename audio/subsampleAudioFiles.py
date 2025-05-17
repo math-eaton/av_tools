@@ -26,8 +26,9 @@ def extract_audio_snippet(input_dir, output_dir):
             file_path = os.path.join(input_dir, file_name)
             audio = AudioSegment.from_file(file_path)
 
-            start_time = int(len(audio) * 0.25)
-            end_time = start_time + 90 * 1000  # N seconds in milliseconds
+            start_time = int(len(audio) * 0.01) # percentage of sample time to start truncated clip at
+            max_duration = 180 * 1000 # new sample duration in seconds (maximum)
+            end_time = start_time + max_duration
 
             # Clip the audio to not exceed the file's length
             snippet = audio[start_time:end_time]
