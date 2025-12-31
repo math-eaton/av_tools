@@ -30,7 +30,7 @@ def remove_outlier_frames(frame_paths, resize, z_threshold=2):
 
 
 
-def convert_video_to_gif(input_video, output_gif, resize=(1024, 768), frame_rate=12):
+def convert_video_to_gif(input_video, output_gif, resize=(1600, 1200), frame_rate=30):
     # Create a temporary directory for frames
     temp_dir = "temp_frames"
     os.makedirs(temp_dir, exist_ok=True)

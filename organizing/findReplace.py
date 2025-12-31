@@ -12,9 +12,9 @@ def find_and_replace_in_filenames(directory, file_extension, find_str, replace_s
                     print(f'Renamed: {old_path} -> {new_path}')
 
 if __name__ == "__main__":
-    input_folder = "/Users/matthewheaton/Downloads/nthng - nthng - sample pack"
+    input_folder = "/Users/matthewheaton/Documents/MH_MUSIC/remixes/misuser"
     extension = ".wav"
-    find_text = "nthng - nthng - sample pack - "
+    find_text = "blood "
     replace_text = ""
 
     find_and_replace_in_filenames(input_folder, extension, find_text, replace_text)

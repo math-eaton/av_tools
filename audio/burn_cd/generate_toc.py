@@ -4,7 +4,7 @@ import sys
 # Album/disc metadata
 album_title = "Shadowboxing"
 album_performer = "Docents"
-disc_id = "TT13"
+disc_id = "TT14"
 
 # Track metadata list: each track has file path, title, and ISRC code.
 tracks = [
@@ -12,7 +12,7 @@ tracks = [
     {"file": "audio/burn_cd/data/2_docents_shadowboxing_IJMaster.wav",   "title": "Shadowboxing",  "isrc": "QZNWZ2598248"},
     {"file": "audio/burn_cd/data/3_docents_double-Fantasy_IJMasterRecall.wav", "title": "Double Fantasy", "isrc": "QZNWZ2598249"},
     {"file": "audio/burn_cd/data/4_docents_shouldnt-We_IJMasterRecall.wav", "title": "Shouldn't We",   "isrc": "QZNWZ2598250"},
-    {"file": "audio/burn_cd/data/5_docents_workout_IJMaster-mjhgap.wav", "title": "Workout",       "isrc": "QZNWZ2598251"}
+    {"file": "audio/burn_cd/data/5_docents_workout_IJMaster.wav", "title": "Workout",       "isrc": "QZNWZ2598251"}
 ]
 
 # Function to escape special characters in text fields for the CUE sheet
@@ -66,3 +66,13 @@ if print_instructions:
     print(f'  cdrdao write --device <YOUR-CD-DEVICE> --driver generic-mmc:0x10 "{cue_filename}"')
     print("Alternatively, to burn with cdrecord (cdrtools) using the CUE sheet:")
     print(f'  cdrecord -v dev=<YOUR-CD-DEVICE> -dao -text cuefile="{cue_filename}"')
+
+    # Additional instructions for identifying the CD/DVD device on macOS
+    print("\nTo identify your CD/DVD device on macOS:")
+    print("  1. Insert a blank CD-R into your drive.")
+    print("  2. Run: diskutil list")
+    print("     Look for a device like /dev/disk2 (type 'CD_ROM').")
+    print("  3. For cdrdao/cdrecord, you may need the device in a different format. Run:")
+    print("     drutil status")
+    print("     or: drutil tray open/close")
+    print("  4. For more details, see: https://wiki.archlinux.org/title/Optical_disc_drive#Device_identification_on_macOS\n")
