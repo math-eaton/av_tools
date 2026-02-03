@@ -5,6 +5,16 @@ output/
 *.yml
 gitignore
 *.gif
+*.png
+
+*.mp4
+*.mkv
+*.mov
+
+*.wav
+*.mp3
+
+z.temp/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

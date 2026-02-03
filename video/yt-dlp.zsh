@@ -1,14 +1,15 @@
 #!/bin/zsh
 
-# Download from client in native resolution/audio
-# Usage: ./yt-dlp.zsh
+# Download from web in native resolution/audio
+# Usage: ./yt-dlp.zsh [URL]
 
-URL="xyz"
+URL="${1:-xyz}"
 
-# Use Homebrew yt-dlp (latest version)
+# Using android_creator and web clients to avoid 403 errors
+
 /usr/local/bin/yt-dlp \
+  --extractor-args "youtube:player_client=android_creator,web;player_skip=configs" \
   --format "bestvideo+bestaudio/best" \
   --merge-output-format mkv \
   --output "%(title)s.%(ext)s" \
-  --verbose \
   "$URL"
