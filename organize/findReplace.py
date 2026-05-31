@@ -1,4 +1,8 @@
 import os
+from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv(Path(__file__).parent / '.env')
 
 def find_and_replace_in_filenames(directory, file_extension, find_str, replace_str):
     for root, _, files in os.walk(directory):
@@ -12,9 +16,9 @@ def find_and_replace_in_filenames(directory, file_extension, find_str, replace_s
                     print(f'Renamed: {old_path} -> {new_path}')
 
 if __name__ == "__main__":
-    input_folder = "/Users/matthewheaton/Documents/MH_MUSIC/remixes/misuser"
-    extension = ".wav"
-    find_text = "blood "
-    replace_text = ""
+    input_folder = os.environ['ORGANIZE_DIR']
+    extension = os.environ.get('FILE_EXT', '.wav')
+    find_text = os.environ['FIND_STRING']
+    replace_text = os.environ.get('REPLACE_STRING', '')
 
     find_and_replace_in_filenames(input_folder, extension, find_text, replace_text)

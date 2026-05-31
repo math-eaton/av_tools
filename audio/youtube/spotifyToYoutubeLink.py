@@ -1,8 +1,15 @@
 import argparse
+import os
 import requests
 import json
+from pathlib import Path
+from dotenv import load_dotenv
 from tenacity import retry, wait_fixed
-from config import SPOTIFY_TOKEN, YOUTUBE_API_KEY
+
+load_dotenv(Path(__file__).parent.parent / '.env')
+
+SPOTIFY_TOKEN = os.environ['SPOTIFY_TOKEN']
+YOUTUBE_API_KEY = os.environ['YOUTUBE_API_KEY']
 
 # Function to get songs from Spotify
 def get_spotify_songs(playlist_id):

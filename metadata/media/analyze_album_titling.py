@@ -474,14 +474,14 @@ class AlbumAnalyzer:
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python analyze_album_for_p2p.py <album_directory> [options]")
+        print("Usage: python analyze_album_titling.py <album_directory> [options]")
         print("\nOptions:")
         print("  --export-tracklist       Export plain text tracklist")
         print("  --export-description     Export BBCode p2p description")
         print("  --export-all             Export both tracklist and description")
         print("\nExample:")
-        print("  python analyze_album_for_p2p.py '/path/to/album'")
-        print("  python analyze_album_for_p2p.py './album' --export-all")
+        print("  python analyze_album_titling.py '/path/to/album'")
+        print("  python analyze_album_titling.py './album' --export-all")
         sys.exit(1)
     
     album_dir = sys.argv[1]

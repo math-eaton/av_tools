@@ -1,4 +1,9 @@
+import os
 import subprocess
+from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv(Path(__file__).parent / '.env')
 
 def convert_mkv_for_chromecast(input_file, output_file):
     command = [
@@ -13,10 +18,10 @@ def convert_mkv_for_chromecast(input_file, output_file):
         '-threads', 'auto',              # Use automatic thread detection
         output_file                      # Output file
     ]
-    
-    # Execute the command
     subprocess.run(command)
 
 
-# Replace 'input.mkv' with your MKV file and 'output.mp4' with the desired output file name.
-convert_mkv_for_chromecast('/Users/matthewheaton/Downloads/Severance.S01E01.1080p.HEVC.x265-MeGusta[eztv.re].mkv', '/Users/matthewheaton/Downloads/Severance_s101.mp4')
+if __name__ == "__main__":
+    input_file = os.environ.get('MKV_INPUT') or input("Input MKV path: ")
+    output_file = os.environ.get('MKV_OUTPUT') or input("Output MP4 path: ")
+    convert_mkv_for_chromecast(input_file, output_file)

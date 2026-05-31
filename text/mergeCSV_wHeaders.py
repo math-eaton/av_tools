@@ -1,6 +1,10 @@
 import os
 import pandas as pd
+from pathlib import Path
+from dotenv import load_dotenv
 from tqdm import tqdm
+
+load_dotenv(Path(__file__).parent / '.env')
 
 def merge_spreadsheets(directory: str, output_filename: str, chunk_size: int = 10000):
     # Define the column schema with data types for optimization
@@ -34,8 +38,7 @@ def merge_spreadsheets(directory: str, output_filename: str, chunk_size: int = 1
         # Process the first chunk separately to write the header
         try:
             first_chunk = next(chunk_iterator)
-            first_chunk.to_csv(output_fil
-            ename, mode='w', index=False, header=True)
+            first_chunk.to_csv(output_filename, mode='w', index=False, header=True)
             header_written = True
             # Update the processed size and progress bar
             processed_size += os.path.getsize(filepath)
@@ -55,6 +58,6 @@ def merge_spreadsheets(directory: str, output_filename: str, chunk_size: int = 1
     pbar.close()
     return output_filename
 
-# Example usage:
-merged_filename = merge_spreadsheets('/Users/matthewheaton/Documents/GitHub/cdp_colloquium/colloquium_ii/data/cellID_csv', '/Users/matthewheaton/Documents/GitHub/cdp_colloquium/colloquium_ii/data/cellID_csv/USAcellularTowers_merged.csv')
-print(f"Merged spreadsheet saved as {merged_filename}")
+if __name__ == "__main__":
+    merged_filename = merge_spreadsheets(os.environ['CSV_INPUT_DIR'], os.environ['CSV_OUTPUT_FILE'])
+    print(f"Merged spreadsheet saved as {merged_filename}")

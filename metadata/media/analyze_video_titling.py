@@ -402,14 +402,14 @@ class VideoAnalyzer:
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python analyze_for_p2p.py <video_file> [options]")
+        print("Usage: python analyze_video_titling.py <video_file> [options]")
         print("\nOptions:")
         print("  --export-mediainfo           Export MediaInfo-style text file")
         print("  --title 'Custom Title'       Use custom title for filename generation")
         print("  --source 'SOURCE'            Override auto-detected source (BluRay, WEB-DL, WEBRip, HDTV, DVDRip, YT-DL)")
         print("\nExample:")
-        print("  python analyze_for_p2p.py video.mkv")
-        print("  python analyze_for_p2p.py video.mkv --title 'Movie.Name.2024' --source 'BluRay'")
+        print("  python analyze_video_titling.py video.mkv")
+        print("  python analyze_video_titling.py video.mkv --title 'Movie.Name.2024' --source 'BluRay'")
         sys.exit(1)
     
     video_file = sys.argv[1]

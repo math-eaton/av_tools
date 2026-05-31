@@ -1,5 +1,7 @@
 # CUSTOM MJH
 config.py
+.env
+!.env.template
 data/
 output/
 *.yml

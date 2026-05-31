@@ -1,6 +1,10 @@
 import os
 import pandas as pd
+from pathlib import Path
+from dotenv import load_dotenv
 from tqdm import tqdm
+
+load_dotenv(Path(__file__).parent / '.env')
 
 def merge_spreadsheets(directory: str, output_filename: str):
     # Get all the spreadsheet filenames in the directory
@@ -36,6 +40,6 @@ def merge_spreadsheets(directory: str, output_filename: str):
     pbar.close()
     return output_filename
 
-# Example usage:
-merged_filename = merge_spreadsheets('/Users/matthewheaton/Documents/GitHub/cdp_colloquium/colloquium_ii/data/cellID_csv', '/Users/matthewheaton/Documents/GitHub/cdp_colloquium/colloquium_ii/data/cellID_csv/USAcellularTowers_merged.csv')
-print(f"Merged spreadsheet saved as {merged_filename}")
+if __name__ == "__main__":
+    merged_filename = merge_spreadsheets(os.environ['CSV_INPUT_DIR'], os.environ['CSV_OUTPUT_FILE'])
+    print(f"Merged spreadsheet saved as {merged_filename}")

@@ -1,6 +1,11 @@
+import os
 import geopandas as gpd
 import pandas as pd
+from pathlib import Path
+from dotenv import load_dotenv
 from shapely.geometry import Point
+
+load_dotenv(Path(__file__).parent / '.env')
 
 def find_coordinate_columns(df):
     lat_col = None
@@ -45,7 +50,8 @@ def convert_csv_to_geofile(input_csv, output_file, file_type='shapefile', chunk_
 
     print(f'File converted and saved as {output_file}.')
 
-# Example usage:
-convert_csv_to_geofile('/Users/matthewheaton/Documents/GitHub/cdp_colloquium/colloquium_ii/data/cellID_csv/USAcellularTowers_merged.csv', '/Users/matthewheaton/Documents/GitHub/cdp_colloquium/colloquium_ii/data/cellID_csv/shapefile/USAcellularTowers_merged.shp')
-# Or for GeoJSON output:
-# convert_csv_to_geofile('input_data.csv', 'output_data.geojson', file_type='geojson')
+if __name__ == "__main__":
+    input_csv = os.environ['GEOCODE_INPUT_CSV']
+    output_shp = os.environ['GEOCODE_OUTPUT_SHP']
+    convert_csv_to_geofile(input_csv, output_shp)
+    # For GeoJSON output, set file_type='geojson' and point GEOCODE_OUTPUT_SHP at a .geojson path
