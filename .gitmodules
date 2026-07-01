@@ -1,0 +1,3 @@
+[submodule "audio/yambs"]
+	path = audio/yambs
+	url = https://codeberg.org/derat/yambs.git
