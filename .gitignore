@@ -8,6 +8,8 @@ output/
 gitignore
 *.gif
 *.png
+cookies.txt
+tmp
 
 *.mp4
 *.mkv

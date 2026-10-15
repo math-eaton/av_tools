@@ -11,7 +11,8 @@ YTDLP="${YTDLP_BIN:-yt-dlp}"
 
 "$YTDLP" \
   --extractor-args "youtube:player_client=android_creator,web;player_skip=configs" \
-  --format "bestvideo+bestaudio/best" \
+  --cookies "./cookies.txt" \
+  --remote-components ejs:github \
   --merge-output-format mkv \
   --output "%(title)s.%(ext)s" \
   "$URL"
